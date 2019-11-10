@@ -67,29 +67,40 @@ public class UsersFragment extends Fragment
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
 
+        final String[] location = {""};
+        final String[] destination = {""};
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
 
-                for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                System.out.println("fireBaseUser " + dataSnapshot.child(firebaseUser.getUid()).hasChild("location"));
+
+                if(dataSnapshot.child(firebaseUser.getUid()).hasChild("location") && dataSnapshot.child(firebaseUser.getUid()).hasChild("destination"))
                 {
-                    User user = snapshot.getValue(User.class);
+                    location[0] = dataSnapshot.child(firebaseUser.getUid()).child("location").getValue().toString();
+                    destination[0] = dataSnapshot.child(firebaseUser.getUid()).child("destination").getValue().toString();
 
-                    assert user != null;
-                    assert firebaseUser != null;
-
-                    System.out.println("User " + user.getName() + " Location = " + user.getLocation());
-                    System.out.println("User " + user.getName() + " Destination = " + user.getDestination());
-
-                    if(!user.getEmail().equals(firebaseUser.getEmail()))
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren())
                     {
-                        mUsers.add(user);
-                    }
-                }
+                        User user = snapshot.getValue(User.class);
 
-                userAdapter = new UserAdapter(getContext(), mUsers);
-                recyclerView.setAdapter(userAdapter);
+                        assert user != null;
+                        assert firebaseUser != null;
+
+                        System.out.println("User " + user.getName() + " Location = " + user.getLocation());
+                        System.out.println("User " + user.getName() + " Destination = " + user.getDestination());
+
+                        if(!user.getEmail().equals(firebaseUser.getEmail()) && user.getLocation().equals(location[0]) && user.getDestination().equals(destination[0]))
+                        {
+                            mUsers.add(user);
+                        }
+                    }
+
+                    userAdapter = new UserAdapter(getContext(), mUsers);
+                    recyclerView.setAdapter(userAdapter);
+                }
             }
 
             @Override

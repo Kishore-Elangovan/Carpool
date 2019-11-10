@@ -118,55 +118,55 @@ public class MainActivity extends AppCompatActivity {
         //Setting button
         dialog.setPositiveButton("SIGN IN", new DialogInterface.OnClickListener()
         {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
 
-                        //Set disable button Sign in
-                        btnSignIn.setEnabled(false);
+                //Set disable button Sign in
+                btnSignIn.setEnabled(false);
 
-                        //Validation
-                        if (TextUtils.isEmpty(edtEmail.getText().toString())) {
-                            Snackbar.make(rootLayout, "Please enter email address", Snackbar.LENGTH_SHORT).show();
-                            return;
-                        }
+                //Validation
+                if (TextUtils.isEmpty(edtEmail.getText().toString())) {
+                    Snackbar.make(rootLayout, "Please enter email address", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
 
-                        if (TextUtils.isEmpty(edtPassword.getText().toString())) {
-                            Snackbar.make(rootLayout, "Please enter password", Snackbar.LENGTH_SHORT).show();
-                            return;
-                        }
+                if (TextUtils.isEmpty(edtPassword.getText().toString())) {
+                    Snackbar.make(rootLayout, "Please enter password", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
 
-                        if (edtPassword.getText().toString().length() < 6) {
-                            Snackbar.make(rootLayout, "Password too short", Snackbar.LENGTH_SHORT).show();
-                            return;
-                        }
+                if (edtPassword.getText().toString().length() < 6) {
+                    Snackbar.make(rootLayout, "Password too short", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
 
-                        waitingDialog = new SpotsDialog(MainActivity.this, "Logging in...");
-                        waitingDialog.show();
+                waitingDialog = new SpotsDialog(MainActivity.this, "Logging in...");
+                waitingDialog.show();
 
 
-                        //Login
-                        auth.signInWithEmailAndPassword(edtEmail.getText().toString(),edtPassword.getText().toString())
-                            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    waitingDialog.dismiss();
-                                    startActivity(new Intent(MainActivity.this, HomePage.class));
-                                    finish();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
+                //Login
+                auth.signInWithEmailAndPassword(edtEmail.getText().toString(),edtPassword.getText().toString())
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
-                            public void onFailure(@NonNull Exception e) {
+                            public void onSuccess(AuthResult authResult) {
                                 waitingDialog.dismiss();
-                                Snackbar.make(rootLayout, "Sign In Unsuccessful. " +e.getMessage(),Snackbar.LENGTH_SHORT).show();
-
-                                //Active button
-                                btnSignIn.setEnabled(true);
+                                startActivity(new Intent(MainActivity.this, HomePage.class));
+                                finish();
                             }
-                        });
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        waitingDialog.dismiss();
+                        Snackbar.make(rootLayout, "Sign In Unsuccessful. " +e.getMessage(),Snackbar.LENGTH_SHORT).show();
+
+                        //Active button
+                        btnSignIn.setEnabled(true);
                     }
                 });
+            }
+        });
 
         dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
@@ -242,12 +242,15 @@ public class MainActivity extends AppCompatActivity {
                                 user.setName(edtName.getText().toString());
                                 user.setPassword(edtPassword.getText().toString());
                                 user.setPhone(edtPhone.getText().toString());
+                                user.setUid(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                                 HashMap<String, String> hashMap = new HashMap<>();
                                 hashMap.put("name", user.getName());
                                 hashMap.put("email", user.getEmail());
                                 hashMap.put("password", user.getPassword());
                                 hashMap.put("phone", user.getPhone());
+
+                                hashMap.put("uid", user.getUid());
 
                                 //Using email
                                 users.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -262,21 +265,21 @@ public class MainActivity extends AppCompatActivity {
                                                 finish();
                                             }
                                         })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Snackbar.make(rootLayout,"Registration Unsuccessful. " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
-                                        waitingDialog.dismiss();
-                                    }
-                                });
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Snackbar.make(rootLayout,"Registration Unsuccessful. " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                                                waitingDialog.dismiss();
+                                            }
+                                        });
                             }
                         })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(rootLayout,"Registration Unsuccessful. " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Snackbar.make(rootLayout,"Registration Unsuccessful. " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 

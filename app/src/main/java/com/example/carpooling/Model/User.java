@@ -6,6 +6,7 @@ import java.util.Map;
 public class User
 {
     private String email,password,name,phone,imageURL,location,destination;
+    private String uid;
 
     public User()
     {
@@ -76,6 +77,14 @@ public class User
         this.destination= destination;
     }
 
+    public void setUid(String uid)
+    {
+        this.uid = uid;
+    }
+    public String getUid()
+    {
+        return uid;
+    }
     public Map<String, Object> toMap()
     {
         HashMap<String, Object> result = new HashMap<>();
@@ -83,6 +92,7 @@ public class User
         result.put("email", email);
         result.put("password", password);
         result.put("phone", phone);
+        result.put("uid", uid);
 
         return result;
     }
